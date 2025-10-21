@@ -2,6 +2,8 @@
 
 project("Battle-City-CMake")
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/out/binary)
+
 include(FetchContent)
 FetchContent_Declare(SFML
     GIT_REPOSITORY https://github.com/SFML/SFML.git
