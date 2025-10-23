@@ -1,9 +1,34 @@
-﻿add_executable(Battle-City-${CMAKE_BUILD_TYPE} "main.cpp")
-
-if(WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Release")
-	set_target_properties(Battle-City-${CMAKE_BUILD_TYPE} PROPERTIES WIN32_EXECUTABLE TRUE)
-	target_link_libraries(Battle-City-${CMAKE_BUILD_TYPE} PRIVATE SFML::Main)
-endif()
-
-target_compile_features(Battle-City-${CMAKE_BUILD_TYPE} PRIVATE cxx_std_17)
-target_link_libraries(Battle-City-${CMAKE_BUILD_TYPE} PRIVATE SFML::Window SFML::System SFML::Graphics SFML::Audio SFML::Network)
+﻿set (SRC
+	"Animation.cpp"
+	"Application.cpp"
+	"Button.cpp"
+	"Command.cpp"
+	"CommandQueue.cpp"
+	"Component.cpp"
+	"Container.cpp"
+	"DataTables.cpp"
+	"Entity.cpp"
+	"GameOverState.cpp"
+	"GameState.cpp"
+	"Label.cpp"
+	"LoadingState.cpp"
+	"MenuState.cpp"
+	"PauseState.cpp"
+	"Pickup.cpp"
+	"Player.cpp"
+	"PlayerData.cpp"
+	"Projectile.cpp"
+	"RectangleNode.cpp"
+	"SceneNode.cpp"
+	"SettingsState.cpp"
+	"SpriteNode.cpp"
+	"State.cpp"
+	"StateStack.cpp"
+	"StatisticsNode.cpp"
+	"Tank.cpp"
+	"TextNode.cpp"
+	"Tilemap.cpp"
+	"TileNode.cpp"
+	"Utility.cpp"
+	"World.cpp"
+)
