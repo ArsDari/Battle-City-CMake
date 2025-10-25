@@ -1,6 +1,6 @@
 #pragma once
 
-enum class Category : uint16_t
+enum class Category : unsigned int
 {
     None = 0,
     Scene = 1 << 0,

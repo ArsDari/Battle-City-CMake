@@ -1,21 +1,7 @@
 #include "Animation.hpp"
-#include <SFML/Graphics/RenderTarget.hpp>
-#include <SFML/Graphics/Texture.hpp>
-
-Animation::Animation() :
-    mSprite(),
-    mFrameSize(),
-    mNumFrames(0),
-    mCurrentFrame(0),
-    mDuration(),
-    mElapsedTime(),
-    mRepeat(false)
-{
-
-}
 
 Animation::Animation(const sf::Texture &texture, sf::Vector2i frameSize, std::size_t numFrames, sf::Time duration) :
-    mSprite(texture),
+    mSprite(texture, sf::IntRect({ 0, 0 }, frameSize)),
     mFrameSize(frameSize),
     mNumFrames(numFrames),
     mCurrentFrame(0),
@@ -23,7 +9,7 @@ Animation::Animation(const sf::Texture &texture, sf::Vector2i frameSize, std::si
     mElapsedTime(),
     mRepeat(false)
 {
-    mSprite.setTextureRect(sf::IntRect(0, 0, mFrameSize.x, mFrameSize.y));
+
 }
 
 void Animation::setTexture(const sf::Texture &texture)
@@ -65,27 +51,33 @@ void Animation::update(sf::Time deltaTime)
 {
     sf::Time timePerFrame = mDuration / static_cast<float>(mNumFrames);
     mElapsedTime += deltaTime;
-    sf::Vector2i textureBounds(mSprite.getTexture()->getSize());
+    sf::Vector2i textureBounds(mSprite.getTexture().getSize());
     sf::IntRect textureRect = mSprite.getTextureRect();
     if (mCurrentFrame == 0)
-        textureRect = sf::IntRect(0, 0, mFrameSize.x, mFrameSize.y);
+    {
+        textureRect = sf::IntRect({ 0, 0 }, mFrameSize);
+    }
     while (mElapsedTime >= timePerFrame && (mCurrentFrame <= mNumFrames || mRepeat))
     {
-        textureRect.left += textureRect.width;
-        if (textureRect.left + textureRect.width > textureBounds.x)
+        textureRect.position.x += textureRect.size.x;
+        if (textureRect.position.x + textureRect.size.x > textureBounds.x)
         {
-            textureRect.left = 0;
-            textureRect.top += textureRect.height;
+            textureRect.position.x = 0;
+            textureRect.position.y += textureRect.position.y;
         }
         mElapsedTime -= timePerFrame;
         if (mRepeat)
         {
             mCurrentFrame = (mCurrentFrame + 1) % mNumFrames;
             if (mCurrentFrame == 0)
-                textureRect = sf::IntRect(0, 0, mFrameSize.x, mFrameSize.y);
+            {
+                textureRect = sf::IntRect({ 0, 0 }, mFrameSize);
+            }
         }
         else
+        {
             mCurrentFrame++;
+        }
     }
     mSprite.setTextureRect(textureRect);
 }

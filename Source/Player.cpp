@@ -5,21 +5,25 @@
 #include <string>
 #include <algorithm>
 
-Player::Player(Category::Type categoryType, Tank::Type tankType, sf::Vector2f spawnpoint) :
+Player::Player(Category categoryType, Tank::Type tankType, sf::Vector2f spawnpoint) :
     mPlayerData(tankType, spawnpoint)
 {
     initializeActions();
     for (auto &pair : mActionBinding)
-        pair.second.category = categoryType;
+    {
+        pair.second.category = static_cast<unsigned int>(categoryType);
+    }
 }
 
 void Player::handleEvent(const sf::Event &event, CommandQueue &commands)
 {
-    if (event.type == sf::Event::KeyPressed)
+    if (const auto *keyPressed = event.getIf<sf::Event::KeyPressed>())
     {
-        auto found = mKeyBinding.find(event.key.code);
+        auto found = mKeyBinding.find(keyPressed->code);
         if (found != mKeyBinding.end() && !isRealtimeAction(found->second))
+        {
             commands.push(mActionBinding[found->second]);
+        }
     }
 }
 
@@ -51,7 +55,7 @@ sf::Keyboard::Key Player::getAssignedKey(Action action) const
         if (pair.second == action)
             return pair.first;
     }
-    return sf::Keyboard::Unknown;
+    return sf::Keyboard::Key::Unknown;
 }
 
 PlayerData &Player::getPlayerData()
@@ -66,11 +70,21 @@ PlayerData Player::getPlayerData() const
 
 void Player::initializeActions()
 {
-    mActionBinding[MoveLeft].action = derivedAction<Tank>([](Tank &tank, sf::Time deltaTime) {tank.moveTank(Entity::Left); });
-    mActionBinding[MoveRight].action = derivedAction<Tank>([](Tank &tank, sf::Time deltaTime) {tank.moveTank(Entity::Right); });
-    mActionBinding[MoveUp].action = derivedAction<Tank>([](Tank &tank, sf::Time deltaTime) {tank.moveTank(Entity::Up); });
-    mActionBinding[MoveDown].action = derivedAction<Tank>([](Tank &tank, sf::Time deltaTime) {tank.moveTank(Entity::Down); });
-    mActionBinding[Fire].action = derivedAction<Tank>([](Tank &tank, sf::Time deltaTime) {tank.fire(); });
+    mActionBinding[MoveLeft].action = derivedAction<Tank>([](Tank &tank, sf::Time deltaTime) {
+        tank.moveTank(Entity::Left);
+    });
+    mActionBinding[MoveRight].action = derivedAction<Tank>([](Tank &tank, sf::Time deltaTime) {
+        tank.moveTank(Entity::Right);
+    });
+    mActionBinding[MoveUp].action = derivedAction<Tank>([](Tank &tank, sf::Time deltaTime) {
+        tank.moveTank(Entity::Up);
+    });
+    mActionBinding[MoveDown].action = derivedAction<Tank>([](Tank &tank, sf::Time deltaTime) {
+        tank.moveTank(Entity::Down);
+    });
+    mActionBinding[Fire].action = derivedAction<Tank>([](Tank &tank, sf::Time deltaTime) {
+        tank.fire();
+    });
 }
 
 bool Player::isRealtimeAction(Action action)

@@ -20,7 +20,7 @@ public:
 
     using Ptr = std::unique_ptr<SceneNode>;
     using Pair = std::pair<SceneNode *, SceneNode *>;
-    explicit SceneNode(Category::Type category = Category::None);
+    explicit SceneNode(Category category = Category::None);
     void attachChild(Ptr child);
     Ptr detachChild(const SceneNode &node);
     void update(sf::Time deltaTime, CommandQueue &commands);
@@ -42,7 +42,7 @@ private:
     void drawChildren(sf::RenderTarget &target, sf::RenderStates states) const;
     std::vector<Ptr> mChildren;
     SceneNode *mParent;
-    Category::Type mDefaultCategory;
+    Category mDefaultCategory;
 };
 
 bool collision(const SceneNode &lhs, const SceneNode &rhs);

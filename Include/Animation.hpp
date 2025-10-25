@@ -6,8 +6,7 @@
 class Animation : public sf::Drawable, public sf::Transformable
 {
 public:
-    Animation();
-    explicit Animation(const sf::Texture &texture, sf::Vector2i frameSize, std::size_t numFrames, sf::Time duration);
+    Animation(const sf::Texture &texture, sf::Vector2i frameSize, std::size_t numFrames, sf::Time duration);
     void setTexture(const sf::Texture &texture);
     void setFrameSize(sf::Vector2i frameSize);
     void setNumFrames(std::size_t numFrames);

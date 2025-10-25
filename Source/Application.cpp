@@ -1,31 +1,31 @@
 #include "Application.hpp"
 #include "State.hpp"
 #include "StateIdentifiers.hpp"
-//#include "MenuState.hpp"
-//#include "GameState.hpp"
-//#include "PauseState.hpp"
-//#include "SettingsState.hpp"
-//#include "LoadingState.hpp"
-//#include "GameOverState.hpp"
+#include "MenuState.hpp"
+#include "GameState.hpp"
+#include "PauseState.hpp"
+#include "SettingsState.hpp"
+#include "LoadingState.hpp"
+#include "GameOverState.hpp"
 
 constexpr unsigned int WINDOW_WIDTH = 256;
 constexpr unsigned int WINDOW_HEIGHT = 224;
 constexpr unsigned int WINDOW_SIZE_MULTIPLIER = 3;
+constexpr sf::Vector2u WINDOW_SIZE{ WINDOW_WIDTH, WINDOW_HEIGHT };
 
-constexpr sf::Vector2u WINDOW_SIZE{ WINDOW_WIDTH * WINDOW_SIZE_MULTIPLIER, WINDOW_HEIGHT * WINDOW_SIZE_MULTIPLIER };
 constexpr sf::Time Application::TimePerFrame = sf::seconds(1.f / 60.f);
 
 Application::Application() :
     mWindow(
-        sf::VideoMode(WINDOW_SIZE),
+        sf::VideoMode(WINDOW_SIZE *WINDOW_SIZE_MULTIPLIER),
         "Battle City",
         sf::Style::None,
         sf::State::Windowed),
     mTextures(),
     mFonts(),
-    /*mPlayers(),
-    mVariables(1, 200, false, false),*/
-    mStateStack()//State::Context(mWindow, mTextures, mFonts, mPlayers, mVariables))
+    mPlayers(),
+    mVariables(1, 200, false, false),
+    mStateStack(State::Context(mWindow, mTextures, mFonts, mPlayers, mVariables))
 {
     mWindow.setKeyRepeatEnabled(false);
     loadMedia();
@@ -46,9 +46,10 @@ void Application::run()
             timeSinceLastUpdate -= TimePerFrame;
             processInput();
             update(TimePerFrame);
-            /*if (mStateStack.isEmpty()) {
+            if (mStateStack.isEmpty())
+            {
                 mWindow.close();
-            }*/
+            }
         }
         render();
     }
@@ -58,7 +59,7 @@ void Application::processInput()
 {
     while (const std::optional event = mWindow.pollEvent())
     {
-        /*mStateStack.handleEvent(event);*/
+        mStateStack.handleEvent(event);
         if (event->is<sf::Event::Closed>())
         {
             mWindow.close();
@@ -68,14 +69,13 @@ void Application::processInput()
 
 void Application::update(sf::Time deltaTime)
 {
-    //mStateStack.update(deltaTime);
+    mStateStack.update(deltaTime);
 }
 
 void Application::render()
 {
-    //mStateStack.draw();
-    mWindow.setView(sf::View(sf::Vector2f(128, 112), sf::Vector2f(256, 224)));
-    //mWindow.draw(mStatisticsText);
+    mStateStack.draw();
+    mWindow.setView(sf::View(sf::Vector2f(WINDOW_SIZE / 2U), sf::Vector2f(WINDOW_SIZE)));
     mWindow.display();
 }
 
@@ -115,29 +115,29 @@ void Application::loadMedia()
 
 void Application::createPlayers() const
 {
-    /*Player firstPlayer(Category::FirstPlayerTank, Tank::FirstPlayer, sf::Vector2f(80, 200));
-    firstPlayer.assignKey(Player::MoveLeft, sf::Keyboard::A);
-    firstPlayer.assignKey(Player::MoveRight, sf::Keyboard::D);
-    firstPlayer.assignKey(Player::MoveUp, sf::Keyboard::W);
-    firstPlayer.assignKey(Player::MoveDown, sf::Keyboard::S);
-    firstPlayer.assignKey(Player::Fire, sf::Keyboard::Space);
+    Player firstPlayer(Category::FirstPlayerTank, Tank::FirstPlayer, sf::Vector2f(80, 200));
+    firstPlayer.assignKey(Player::MoveLeft, sf::Keyboard::Key::A);
+    firstPlayer.assignKey(Player::MoveRight, sf::Keyboard::Key::D);
+    firstPlayer.assignKey(Player::MoveUp, sf::Keyboard::Key::W);
+    firstPlayer.assignKey(Player::MoveDown, sf::Keyboard::Key::S);
+    firstPlayer.assignKey(Player::Fire, sf::Keyboard::Key::Space);
     Player secondPlayer(Category::SecondPlayerTank, Tank::SecondPlayer, sf::Vector2f(144, 200));
-    secondPlayer.assignKey(Player::MoveLeft, sf::Keyboard::Left);
-    secondPlayer.assignKey(Player::MoveRight, sf::Keyboard::Right);
-    secondPlayer.assignKey(Player::MoveUp, sf::Keyboard::Up);
-    secondPlayer.assignKey(Player::MoveDown, sf::Keyboard::Down);
-    secondPlayer.assignKey(Player::Fire, sf::Keyboard::Slash);
+    secondPlayer.assignKey(Player::MoveLeft, sf::Keyboard::Key::Left);
+    secondPlayer.assignKey(Player::MoveRight, sf::Keyboard::Key::Right);
+    secondPlayer.assignKey(Player::MoveUp, sf::Keyboard::Key::Up);
+    secondPlayer.assignKey(Player::MoveDown, sf::Keyboard::Key::Down);
+    secondPlayer.assignKey(Player::Fire, sf::Keyboard::Key::Slash);
     mPlayers.push_back(firstPlayer);
-    mPlayers.push_back(secondPlayer);*/
+    mPlayers.push_back(secondPlayer);
 }
 
 void Application::registerStates()
 {
-    /*mStateStack.registerState<MenuState>(States::Menu);
+    mStateStack.registerState<MenuState>(States::Menu);
     mStateStack.registerState<GameState>(States::Game);
     mStateStack.registerState<LoadingState>(States::Loading);
     mStateStack.registerState<PauseState>(States::Pause);
     mStateStack.registerState<SettingsState>(States::Settings);
     mStateStack.registerState<GameOverState>(States::GameOver);
-    mStateStack.pushState(States::Menu);*/
+    mStateStack.pushState(States::Menu);
 }

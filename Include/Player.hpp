@@ -1,8 +1,9 @@
 #pragma once
 
 #include "Command.hpp"
+#include "Category.hpp"
 #include "PlayerData.hpp"
-#include <SFML/Window/Event.hpp>
+#include <SFML/Window.hpp>
 #include <map>
 
 class CommandQueue;
@@ -19,7 +20,7 @@ public:
         Fire,
         ActionCount
     };
-    Player(Category::Type categoryType, Tank::Type tankType, sf::Vector2f spawnpoint);
+    Player(Category categoryType, Tank::Type tankType, sf::Vector2f spawnpoint);
     void handleEvent(const sf::Event &event, CommandQueue &commands);
     void handleRealtimeInput(CommandQueue &commands);
     void assignKey(Action action, sf::Keyboard::Key key);
