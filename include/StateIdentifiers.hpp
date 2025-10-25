@@ -1,16 +1,13 @@
 #pragma once
 
-namespace States
+enum class States
 {
-	enum ID
-	{
-		None,
-		Menu,
-		Game,
-		Loading,
-		Construction,
-		Pause,
-		Settings,
-		GameOver
-	};
-}
+    None,
+    Menu,
+    Game,
+    Loading,
+    Construction,
+    Pause,
+    Settings,
+    GameOver
+};

@@ -2,49 +2,50 @@
 
 namespace sf
 {
-	class Texture;
-	class Font;
+    class Texture;
+    class Font;
 }
 
-namespace Textures
+enum class Textures
 {
-	enum ID
-	{
-		FirstPlayer,
-		SecondPlayer,
-		EnemyRegularTank,
-		EnemyAPC,
-		EnemyRapidFireTank,
-		EnemyHeavyTank,
-		Tileset,
-		BulletTile,
-		Pickups,
-		InvicibilityFrames,
-		SpawningFrames,
-		Points,
-		SmallExplosionFrames,
-		BigExplosionFrames,
-		ButtonSelected,
-		Statistics,
-		TankMark,
-		Logo,
-		FirstPlayerScorePrefix,
-		MostScorePrefix,
-		SecondPlayerScorePrefix,
-		Unknown
-	};
-}
+    Titlescreen,
+    FirstPlayerTank,
+    SecondPlayerTank,
+    EnemyLightTank,
+    EnemyAPC,
+    EnemyTankDestroyer,
+    EnemyHeavyTank,
+    BrickTileset,
+    Concrete,
+    WaterAnimation,
+    Leaves,
+    Ice,
+    Eagle,
+    DestroyedEagle,
+    BulletTileset,
+    Pickups,
+    Points,
+    InvicibilityAnimation,
+    SpawnAnimation,
+    SmallExplosionAnimation,
+    BigExplosionAnimation,
+    FirstPlayerStatistics,
+    SecondPlayerStatistics,
+    HighScoreStatistics,
+    ButtonSelect,
+    Statistics,
+    IconTank,
+    EasterEgg,
+    Unknown
+};
 
-namespace Fonts
+enum class Fonts
 {
-	enum ID
-	{
-		Main
-	};
-}
+    Main
+};
 
 template <typename Resource, typename Identifier>
 class ResourceHolder;
 
-using TextureHolder = ResourceHolder<sf::Texture, Textures::ID>;
-using FontHolder = ResourceHolder<sf::Font, Fonts::ID>;
+using TextureHolder = ResourceHolder<sf::Texture, Textures>;
+using FontHolder = ResourceHolder<sf::Font, Fonts>;
