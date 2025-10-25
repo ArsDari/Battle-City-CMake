@@ -7,6 +7,7 @@
 #include <vector>
 #include <functional>
 #include <map>
+#include <optional>
 
 namespace sf
 {
@@ -23,7 +24,6 @@ public:
         Pop,
         Clear
     };
-public:
     StateStack(const StateStack &) = delete;
     StateStack &operator=(const StateStack &) = delete;
     explicit StateStack(State::Context context);
@@ -31,7 +31,7 @@ public:
     void registerState(States stateID);
     void update(sf::Time deltaTime);
     void draw();
-    void handleEvent(const sf::Event &event);
+    void handleEvent(const std::optional<sf::Event> &event);
     void pushState(States stateID);
     void popState();
     void clearStates();

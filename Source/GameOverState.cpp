@@ -1,28 +1,28 @@
 #include "GameOverState.hpp"
 #include "Player.hpp"
 #include "ResourceHolder.hpp"
-#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics.hpp>
 
 GameOverState::GameOverState(StateStack &stack, Context context) :
     State(stack, context),
     mElapsedTime(),
     mFinishedCounting(false)
 {
-    mPointsTable[Tank::EnemyRegularTank] = 1;
-    mPointsTable[Tank::EnemyAPC] = 2;
-    mPointsTable[Tank::EnemyRapidFireTank] = 3;
-    mPointsTable[Tank::EnemyHeavyTank] = 4;
+    mPointsTable[Tank::Type::EnemyLightTank] = 1;
+    mPointsTable[Tank::Type::EnemyAPC] = 2;
+    mPointsTable[Tank::Type::EnemyTankDestroyer] = 3;
+    mPointsTable[Tank::Type::EnemyHeavyTank] = 4;
 }
 
 void GameOverState::draw()
 {
-    sf::RenderWindow &window = *getContext().window;
+    sf::RenderWindow &window = getContext().window;
     window.clear();
 }
 
 bool GameOverState::update(sf::Time deltaTime)
 {
-    for (auto &player : *getContext().players)
+    for (auto &player : getContext().players)
     {
         PlayerData::Statistics statistics = player.getPlayerData().resetStatistics();
         for (auto &pair : statistics)
@@ -37,17 +37,17 @@ bool GameOverState::update(sf::Time deltaTime)
     }
     if (mFinishedCounting)
     {
-        if (getContext().variables->currentLevelStatus == LevelFailure)
+        if (getContext().variables.currentLevelStatus == State::LevelStatus::LevelFailure)
         {
             requestStackClear();
             requestStackPush(States::Menu);
         }
         else
         {
-            int &level = getContext().variables->level;
+            int &level = getContext().variables.level;
             // 5 levels for now 
             level = level + 1 > 5 ? 1 : level + 1;
-            getContext().variables->needToLoadNextLevel = true;
+            getContext().variables.needToLoadNextLevel = true;
             requestStackClear();
             requestStackPush(States::Loading);
         }
@@ -55,7 +55,7 @@ bool GameOverState::update(sf::Time deltaTime)
     return false;
 }
 
-bool GameOverState::handleEvent(const sf::Event &event)
+bool GameOverState::handleEvent(const std::optional<sf::Event> &event)
 {
     return false;
 }

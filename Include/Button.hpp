@@ -28,7 +28,7 @@ namespace GUI
         virtual void deselect();
         virtual void activate();
         virtual void deactivate();
-        virtual void handleEvent(const sf::Event &event);
+        virtual void handleEvent(const std::optional<sf::Event> &event);
         virtual void update(sf::Time deltaTime);
     private:
         virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const;

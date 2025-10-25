@@ -5,10 +5,7 @@
 #include "ResourceIdentifiers.hpp"
 #include "Player.hpp"
 #include "World.hpp"
-#include <SFML/Graphics/VertexArray.hpp>
-#include <SFML/Graphics/Sprite.hpp>
-#include <SFML/Graphics/Text.hpp>
-#include <SFML/Graphics/Texture.hpp>
+#include <SFML/Graphics.hpp>
 
 class StatisticsNode : public SceneNode
 {

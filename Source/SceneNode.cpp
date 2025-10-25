@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <cassert>
 
-SceneNode::SceneNode(Category::Type category) :
+SceneNode::SceneNode(Category category) :
     mChildren(),
     mParent(nullptr),
     mDefaultCategory(category)
@@ -42,19 +42,25 @@ sf::Transform SceneNode::getWorldTransform() const
 {
     sf::Transform transform = sf::Transform::Identity;
     for (const SceneNode *node = this; node != nullptr; node = node->mParent)
+    {
         transform = node->getTransform() * transform;
+    }
     return transform;
 }
 
 void SceneNode::onCommand(const Command &command, sf::Time deltaTime)
 {
-    if (command.category & getCategory())
+    if (static_cast<unsigned int>(command.category) & static_cast<unsigned int>(getCategory()))
+    {
         command.action(*this, deltaTime);
+    }
     for (Ptr &child : mChildren)
+    {
         child->onCommand(command, deltaTime);
+    }
 }
 
-unsigned int SceneNode::getCategory() const
+Category SceneNode::getCategory() const
 {
     return mDefaultCategory;
 }
@@ -63,15 +69,21 @@ void SceneNode::checkSceneCollision(SceneNode &sceneGraph, std::set<Pair> &colli
 {
     checkNodeCollision(sceneGraph, collisionPairs);
     for (Ptr &child : sceneGraph.mChildren)
+    {
         checkSceneCollision(*child, collisionPairs);
+    }
 }
 
 void SceneNode::checkNodeCollision(SceneNode &node, std::set<Pair> &collisionPairs)
 {
     if (this != &node && collision(*this, node) && !isDestroyed() && !node.isDestroyed())
+    {
         collisionPairs.insert(std::minmax(this, &node));
+    }
     for (Ptr &child : mChildren)
+    {
         child->checkNodeCollision(node, collisionPairs);
+    }
 }
 
 void SceneNode::removeWrecks()
@@ -104,7 +116,9 @@ void SceneNode::updateCurrent(sf::Time deltaTime, CommandQueue &commands)
 void SceneNode::updateChildren(sf::Time deltaTime, CommandQueue &commands)
 {
     for (Ptr &child : mChildren)
+    {
         child->update(deltaTime, commands);
+    }
 }
 
 void SceneNode::draw(sf::RenderTarget &target, sf::RenderStates states) const
@@ -122,12 +136,14 @@ void SceneNode::drawCurrent(sf::RenderTarget &target, sf::RenderStates states) c
 void SceneNode::drawChildren(sf::RenderTarget &target, sf::RenderStates states) const
 {
     for (const Ptr &child : mChildren)
+    {
         child->draw(target, states);
+    }
 }
 
 bool collision(const SceneNode &lhs, const SceneNode &rhs)
 {
-    return lhs.getBoundingRect().intersects(rhs.getBoundingRect());
+    return bool(lhs.getBoundingRect().findIntersection(rhs.getBoundingRect()));
 }
 
 sf::Vector2f distance(const SceneNode &lhs, const SceneNode &rhs)

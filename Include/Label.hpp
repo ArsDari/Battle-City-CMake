@@ -13,7 +13,7 @@ namespace GUI
         using Ptr = std::shared_ptr<Label>;
         Label(const std::string &text, const FontHolder &fonts, bool isBlink);
         virtual bool isSelectable() const;
-        virtual void handleEvent(const sf::Event &event);
+        virtual void handleEvent(const std::optional<sf::Event> &event);
         virtual void update(sf::Time deltaTime);
         sf::Text &getText();
     private:

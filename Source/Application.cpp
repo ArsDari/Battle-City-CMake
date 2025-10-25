@@ -113,15 +113,15 @@ void Application::loadMedia()
     mTextures.load(Textures::EasterEgg, "Media/Tiles/EasterEgg.png");
 }
 
-void Application::createPlayers() const
+void Application::createPlayers()
 {
-    Player firstPlayer(Category::FirstPlayerTank, Tank::FirstPlayer, sf::Vector2f(80, 200));
+    Player firstPlayer(Category::FirstPlayerTank, Tank::Type::FirstPlayerTank, sf::Vector2f(80, 200));
     firstPlayer.assignKey(Player::MoveLeft, sf::Keyboard::Key::A);
     firstPlayer.assignKey(Player::MoveRight, sf::Keyboard::Key::D);
     firstPlayer.assignKey(Player::MoveUp, sf::Keyboard::Key::W);
     firstPlayer.assignKey(Player::MoveDown, sf::Keyboard::Key::S);
     firstPlayer.assignKey(Player::Fire, sf::Keyboard::Key::Space);
-    Player secondPlayer(Category::SecondPlayerTank, Tank::SecondPlayer, sf::Vector2f(144, 200));
+    Player secondPlayer(Category::SecondPlayerTank, Tank::Type::SecondPlayerTank, sf::Vector2f(144, 200));
     secondPlayer.assignKey(Player::MoveLeft, sf::Keyboard::Key::Left);
     secondPlayer.assignKey(Player::MoveRight, sf::Keyboard::Key::Right);
     secondPlayer.assignKey(Player::MoveUp, sf::Keyboard::Key::Up);

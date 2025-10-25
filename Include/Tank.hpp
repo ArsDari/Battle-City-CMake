@@ -6,7 +6,7 @@
 #include "Tilemap.hpp"
 #include "Projectile.hpp"
 #include "Animation.hpp"
-#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics.hpp>
 
 class PlayerData;
 
@@ -15,19 +15,19 @@ class Tank : public Entity
 public:
     using TankFunction = std::function<void(Tank *)>;
     using Tanks = std::vector<Tank *>;
-    enum Type
+    enum class Type : unsigned int
     {
-        FirstPlayer,
-        SecondPlayer,
-        EnemyRegularTank,
+        FirstPlayerTank,
+        SecondPlayerTank,
+        EnemyLightTank,
         EnemyAPC,
-        EnemyRapidFireTank,
+        EnemyTankDestroyer,
         EnemyHeavyTank,
         TypeCount
     };
     Tank(Type type, const TextureHolder &textures, Tilemap &tilemap, PlayerData &playerData); // player
     Tank(Type type, const TextureHolder &textures, Tilemap &tilemap, bool isBonusTank); // enemy
-    virtual unsigned int getCategory() const;
+    virtual Category getCategory() const;
     virtual sf::FloatRect getBoundingRect() const;
     virtual bool isMarkedForRemoval() const;
     virtual void remove();

@@ -2,7 +2,7 @@
 
 Command::Command() :
     action(),
-    category(static_cast<unsigned int>(Category::None))
+    category(Category::None)
 {
 
 }

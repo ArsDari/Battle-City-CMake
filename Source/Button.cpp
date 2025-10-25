@@ -87,7 +87,7 @@ namespace GUI
         }
     }
 
-    void Button::handleEvent(const sf::Event &event)
+    void Button::handleEvent(const std::optional<sf::Event> &event)
     {
 
     }

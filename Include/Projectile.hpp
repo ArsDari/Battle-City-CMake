@@ -4,14 +4,14 @@
 #include "ResourceIdentifiers.hpp"
 #include "Tilemap.hpp"
 #include "Animation.hpp"
-#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics.hpp>
 
 class PlayerData;
 
 class Projectile : public Entity
 {
 public:
-    enum Type
+    enum class Type : unsigned int
     {
         FirstPlayerSlowBullet,
         FirstPlayerFastBullet,
@@ -23,7 +23,7 @@ public:
     };
     Projectile(Type type, const TextureHolder &textures, Tilemap &tilemap, Rotation rotation, PlayerData *playerData, int &bullets);
     Projectile(Type type, const TextureHolder &textures, Tilemap &tilemap, Rotation rotation, int &bullets);
-    virtual unsigned int getCategory() const;
+    virtual Category getCategory() const;
     virtual sf::FloatRect getBoundingRect() const;
     virtual bool isMarkedForRemoval() const;
     void remove();

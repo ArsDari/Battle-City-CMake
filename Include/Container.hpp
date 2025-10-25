@@ -13,11 +13,11 @@ namespace GUI
         Container();
         void pack(Component::Ptr component);
         virtual bool isSelectable() const;
-        virtual void handleEvent(const sf::Event& event);
+        virtual void handleEvent(const std::optional<sf::Event> &event);
         virtual void update(sf::Time deltaTime);
         virtual void setShowSprite(bool flag);
     private:
-        virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+        virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const;
         bool hasSelection() const;
         void select(std::size_t index);
         void selectNext();

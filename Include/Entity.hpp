@@ -5,7 +5,7 @@
 class Entity : public SceneNode
 {
 public:
-    enum Rotation
+    enum class Rotation : unsigned int
     {
         Left,
         Right,

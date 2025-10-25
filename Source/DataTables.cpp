@@ -6,77 +6,77 @@
 
 std::vector<TankData> initializeTankData()
 {
-    std::vector<TankData> data(Tank::TypeCount);
-    data[Tank::FirstPlayer].hitpoints = 1;
-    data[Tank::FirstPlayer].framesPerMove = 4;
-    data[Tank::FirstPlayer].texture = Textures::FirstPlayerTank;
-    data[Tank::FirstPlayer].fireInterval = sf::seconds(12.f / 60.f);
-    data[Tank::SecondPlayer].hitpoints = 1;
-    data[Tank::SecondPlayer].framesPerMove = 4;
-    data[Tank::SecondPlayer].texture = Textures::SecondPlayerTank;
-    data[Tank::SecondPlayer].fireInterval = sf::seconds(12.f / 60.f);
-    data[Tank::EnemyRegularTank].hitpoints = 1;
-    data[Tank::EnemyRegularTank].framesPerMove = 2;
-    data[Tank::EnemyRegularTank].texture = Textures::EnemyLightTank;
-    data[Tank::EnemyRegularTank].fireInterval = sf::seconds(12.f / 60.f);
-    data[Tank::EnemyAPC].hitpoints = 1;
-    data[Tank::EnemyAPC].framesPerMove = 1;
-    data[Tank::EnemyAPC].texture = Textures::EnemyAPC;
-    data[Tank::EnemyAPC].fireInterval = sf::seconds(12.f / 60.f);
-    data[Tank::EnemyRapidFireTank].hitpoints = 1;
-    data[Tank::EnemyRapidFireTank].framesPerMove = 2;
-    data[Tank::EnemyRapidFireTank].texture = Textures::EnemyTankDestroyer;
-    data[Tank::EnemyRapidFireTank].fireInterval = sf::seconds(12.f / 60.f);
-    data[Tank::EnemyHeavyTank].hitpoints = 4;
-    data[Tank::EnemyHeavyTank].framesPerMove = 2;
-    data[Tank::EnemyHeavyTank].texture = Textures::EnemyHeavyTank;
-    data[Tank::EnemyHeavyTank].fireInterval = sf::seconds(12.f / 60.f);
+    std::vector<TankData> data(static_cast<unsigned int>(Tank::Type::TypeCount));
+    data[static_cast<unsigned int>(Tank::Type::FirstPlayerTank)].hitpoints = 1;
+    data[static_cast<unsigned int>(Tank::Type::FirstPlayerTank)].framesPerMove = 4;
+    data[static_cast<unsigned int>(Tank::Type::FirstPlayerTank)].texture = Textures::FirstPlayerTank;
+    data[static_cast<unsigned int>(Tank::Type::FirstPlayerTank)].fireInterval = sf::seconds(12.f / 60.f);
+    data[static_cast<unsigned int>(Tank::Type::SecondPlayerTank)].hitpoints = 1;
+    data[static_cast<unsigned int>(Tank::Type::SecondPlayerTank)].framesPerMove = 4;
+    data[static_cast<unsigned int>(Tank::Type::SecondPlayerTank)].texture = Textures::SecondPlayerTank;
+    data[static_cast<unsigned int>(Tank::Type::SecondPlayerTank)].fireInterval = sf::seconds(12.f / 60.f);
+    data[static_cast<unsigned int>(Tank::Type::EnemyLightTank)].hitpoints = 1;
+    data[static_cast<unsigned int>(Tank::Type::EnemyLightTank)].framesPerMove = 2;
+    data[static_cast<unsigned int>(Tank::Type::EnemyLightTank)].texture = Textures::EnemyLightTank;
+    data[static_cast<unsigned int>(Tank::Type::EnemyLightTank)].fireInterval = sf::seconds(12.f / 60.f);
+    data[static_cast<unsigned int>(Tank::Type::EnemyAPC)].hitpoints = 1;
+    data[static_cast<unsigned int>(Tank::Type::EnemyAPC)].framesPerMove = 1;
+    data[static_cast<unsigned int>(Tank::Type::EnemyAPC)].texture = Textures::EnemyAPC;
+    data[static_cast<unsigned int>(Tank::Type::EnemyAPC)].fireInterval = sf::seconds(12.f / 60.f);
+    data[static_cast<unsigned int>(Tank::Type::EnemyTankDestroyer)].hitpoints = 1;
+    data[static_cast<unsigned int>(Tank::Type::EnemyTankDestroyer)].framesPerMove = 2;
+    data[static_cast<unsigned int>(Tank::Type::EnemyTankDestroyer)].texture = Textures::EnemyTankDestroyer;
+    data[static_cast<unsigned int>(Tank::Type::EnemyTankDestroyer)].fireInterval = sf::seconds(12.f / 60.f);
+    data[static_cast<unsigned int>(Tank::Type::EnemyHeavyTank)].hitpoints = 4;
+    data[static_cast<unsigned int>(Tank::Type::EnemyHeavyTank)].framesPerMove = 2;
+    data[static_cast<unsigned int>(Tank::Type::EnemyHeavyTank)].texture = Textures::EnemyHeavyTank;
+    data[static_cast<unsigned int>(Tank::Type::EnemyHeavyTank)].fireInterval = sf::seconds(12.f / 60.f);
     return data;
 }
 
 std::vector<ProjectileData> initializeProjectileData()
 {
-    std::vector<ProjectileData> data(Projectile::TypeCount);
-    data[Projectile::FirstPlayerSlowBullet].damage = 1;
-    data[Projectile::FirstPlayerSlowBullet].pixelPerFrame = 2;
-    data[Projectile::FirstPlayerFastBullet].damage = 1;
-    data[Projectile::FirstPlayerFastBullet].pixelPerFrame = 4;
-    data[Projectile::SecondPlayerSlowBullet].damage = 1;
-    data[Projectile::SecondPlayerSlowBullet].pixelPerFrame = 2;
-    data[Projectile::SecondPlayerFastBullet].damage = 1;
-    data[Projectile::SecondPlayerFastBullet].pixelPerFrame = 4;
-    data[Projectile::EnemySlowBullet].damage = 1;
-    data[Projectile::EnemySlowBullet].pixelPerFrame = 2;
-    data[Projectile::EnemyFastBullet].damage = 1;
-    data[Projectile::EnemyFastBullet].pixelPerFrame = 4;
+    std::vector<ProjectileData> data(static_cast<unsigned int>(Projectile::Type::TypeCount));
+    data[static_cast<unsigned int>(Projectile::Type::FirstPlayerSlowBullet)].damage = 1;
+    data[static_cast<unsigned int>(Projectile::Type::FirstPlayerSlowBullet)].pixelPerFrame = 2;
+    data[static_cast<unsigned int>(Projectile::Type::FirstPlayerFastBullet)].damage = 1;
+    data[static_cast<unsigned int>(Projectile::Type::FirstPlayerFastBullet)].pixelPerFrame = 4;
+    data[static_cast<unsigned int>(Projectile::Type::SecondPlayerSlowBullet)].damage = 1;
+    data[static_cast<unsigned int>(Projectile::Type::SecondPlayerSlowBullet)].pixelPerFrame = 2;
+    data[static_cast<unsigned int>(Projectile::Type::SecondPlayerFastBullet)].damage = 1;
+    data[static_cast<unsigned int>(Projectile::Type::SecondPlayerFastBullet)].pixelPerFrame = 4;
+    data[static_cast<unsigned int>(Projectile::Type::EnemySlowBullet)].damage = 1;
+    data[static_cast<unsigned int>(Projectile::Type::EnemySlowBullet)].pixelPerFrame = 2;
+    data[static_cast<unsigned int>(Projectile::Type::EnemyFastBullet)].damage = 1;
+    data[static_cast<unsigned int>(Projectile::Type::EnemyFastBullet)].pixelPerFrame = 4;
     return data;
 }
 
 std::vector<PickupData> initializePickupData()
 {
     sf::Vector2i spriteSize{ 16, 16 };
-    std::vector<PickupData> data(Pickup::TypeCount);
-    data[Pickup::Helmet].action = [](Tank &tank) { tank.makeInvincible(sf::seconds(10.f)); };
-    data[Pickup::Helmet].textureRect = sf::IntRect({ 0, 0 }, spriteSize);
-    data[Pickup::Clock].action = [](Tank &tank) {
+    std::vector<PickupData> data(static_cast<unsigned int>(Pickup::Type::TypeCount));
+    data[static_cast<unsigned int>(Pickup::Type::Helmet)].action = [](Tank &tank) { tank.makeInvincible(sf::seconds(10.f)); };
+    data[static_cast<unsigned int>(Pickup::Type::Helmet)].textureRect = sf::IntRect({ 0, 0 }, spriteSize);
+    data[static_cast<unsigned int>(Pickup::Type::Clock)].action = [](Tank &tank) {
         Command command;
-        command.category = static_cast<unsigned int>(Category::EnemyTank);
+        command.category = Category::EnemyTank;
         command.action = derivedAction<Tank>([](Tank &tank, sf::Time) {tank.stopTank(sf::seconds(10.f), true); });
         tank.setPendingCommand(command);
     };
-    data[Pickup::Clock].textureRect = sf::IntRect({ 16, 0 }, spriteSize);
-    data[Pickup::Shovel].action = [](Tank &tank) { tank.defendBase(); };
-    data[Pickup::Shovel].textureRect = sf::IntRect({ 32, 0 }, spriteSize);
-    data[Pickup::Star].action = [](Tank &tank) { tank.upgrade(); };
-    data[Pickup::Star].textureRect = sf::IntRect({ 48, 0 }, spriteSize);
-    data[Pickup::Grenade].action = [](Tank &tank) {
+    data[static_cast<unsigned int>(Pickup::Type::Clock)].textureRect = sf::IntRect({ 16, 0 }, spriteSize);
+    data[static_cast<unsigned int>(Pickup::Type::Shovel)].action = [](Tank &tank) { tank.defendBase(); };
+    data[static_cast<unsigned int>(Pickup::Type::Shovel)].textureRect = sf::IntRect({ 32, 0 }, spriteSize);
+    data[static_cast<unsigned int>(Pickup::Type::Star)].action = [](Tank &tank) { tank.upgrade(); };
+    data[static_cast<unsigned int>(Pickup::Type::Star)].textureRect = sf::IntRect({ 48, 0 }, spriteSize);
+    data[static_cast<unsigned int>(Pickup::Type::Grenade)].action = [](Tank &tank) {
         Command command;
-        command.category = static_cast<unsigned int>(Category::EnemyTank);
+        command.category = Category::EnemyTank;
         command.action = derivedAction<Tank>([](Tank &tank, sf::Time deltaTime) {tank.destroy(); });
         tank.setPendingCommand(command);
     };
-    data[Pickup::Grenade].textureRect = sf::IntRect({ 64, 0 }, spriteSize);
-    data[Pickup::Life].action = [](Tank &tank) { tank.addLife(); };
-    data[Pickup::Life].textureRect = sf::IntRect({ 80, 0 }, spriteSize);
+    data[static_cast<unsigned int>(Pickup::Type::Grenade)].textureRect = sf::IntRect({64, 0}, spriteSize);
+    data[static_cast<unsigned int>(Pickup::Type::Life)].action = [](Tank &tank) { tank.addLife(); };
+    data[static_cast<unsigned int>(Pickup::Type::Life)].textureRect = sf::IntRect({ 80, 0 }, spriteSize);
     return data;
 }

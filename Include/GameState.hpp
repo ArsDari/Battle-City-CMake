@@ -11,7 +11,7 @@ public:
     GameState(StateStack &stack, Context context);
     virtual void draw();
     virtual bool update(sf::Time deltaTime);
-    virtual bool handleEvent(const sf::Event &event);
+    virtual bool handleEvent(const std::optional<sf::Event> &event);
     void setLevelStatus(LevelStatus status);
     LevelStatus getLevelStatus() const;
 private:

@@ -7,6 +7,7 @@
 #include <SFML/Window.hpp>
 #include <vector>
 #include <memory>
+#include <optional>
 
 namespace sf
 {
@@ -48,7 +49,7 @@ public:
     virtual ~State();
     virtual void draw() = 0;
     virtual bool update(sf::Time deltaTime) = 0;
-    virtual bool handleEvent(const sf::Event &event) = 0;
+    virtual bool handleEvent(const std::optional<sf::Event> &event) = 0;
 protected:
     void requestStackPush(States stateID);
     void requestStackPop();

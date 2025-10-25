@@ -3,12 +3,12 @@
 
 RectangleNode::RectangleNode(sf::FloatRect rect, sf::Color color)
 {
-	mShape.setSize(rect.getSize());
-	mShape.setPosition(rect.getPosition());
-	mShape.setFillColor(color);
+    mShape.setSize(rect.size);
+    mShape.setPosition(rect.position);
+    mShape.setFillColor(color);
 }
 
-void RectangleNode::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
+void RectangleNode::drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const
 {
-	target.draw(mShape, states);
+    target.draw(mShape, states);
 }

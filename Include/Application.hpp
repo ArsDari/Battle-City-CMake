@@ -17,7 +17,7 @@ private:
     void update(sf::Time deltaTime);
     void render();
     void loadMedia();
-    void createPlayers() const;
+    void createPlayers();
     void registerStates();
     static const sf::Time TimePerFrame;
     sf::RenderWindow mWindow;

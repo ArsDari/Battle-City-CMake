@@ -12,7 +12,7 @@ struct Command
     using Action = std::function<void(SceneNode &, sf::Time)>;
     Command();
     Action action;
-    unsigned int category;
+    Category category;
 };
 
 template <typename GameObject, typename Function>

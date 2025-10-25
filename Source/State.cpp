@@ -6,7 +6,7 @@ State::Variables::Variables(int level, int mostPoints, bool isMultiplayer, bool 
     mostPoints(mostPoints),
     isMultiplayer(isMultiplayer),
     needToLoadNextLevel(needToLoadNextLevel),
-    currentLevelStatus(LevelRunning)
+    currentLevelStatus(State::LevelStatus::LevelRunning)
 {
 
 }

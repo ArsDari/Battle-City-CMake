@@ -26,13 +26,13 @@ namespace GUI
         return false;
     }
 
-    void Container::handleEvent(const sf::Event &event)
+    void Container::handleEvent(const std::optional<sf::Event> &event)
     {
         if (hasSelection() && mChildren[mSelectedChild]->isActive())
         {
             mChildren[mSelectedChild]->handleEvent(event);
         }
-        else if (const auto* keyPressed = event.getIf<sf::Event::KeyReleased>())
+        else if (const auto* keyPressed = event->getIf<sf::Event::KeyReleased>())
         {
             if (keyPressed->code == sf::Keyboard::Key::W || keyPressed->code == sf::Keyboard::Key::Up)
             {

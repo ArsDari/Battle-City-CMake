@@ -5,8 +5,7 @@
 #include "Tilemap.hpp"
 #include "ResourceHolder.hpp"
 #include "ResourceIdentifiers.hpp"
-#include <SFML/Graphics/Texture.hpp>
-#include <SFML/Graphics/VertexArray.hpp>
+#include <SFML/Graphics.hpp>
 #include <vector>
 
 class TileNode : public SceneNode
@@ -19,7 +18,7 @@ private:
     virtual void drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const;
     virtual void updateCurrent(sf::Time deltaTime, CommandQueue &commands);
     sf::Texture mTileset;
-    sf::Vector2i mWallTileSize;
+    sf::Vector2i mTileSize;
     sf::VertexArray mVertices;
     std::vector<Tilemap::Type> mTiles;
     Animation mSmallExplosion;

@@ -13,7 +13,7 @@ public:
     SettingsState(StateStack &stack, Context context);
     virtual void draw();
     virtual bool update(sf::Time deltaTime);
-    virtual bool handleEvent(const sf::Event &event);
+    virtual bool handleEvent(const std::optional<sf::Event> &event);
 private:
     void updateLabels();
     void addButtonLabel(Player::Action action, float y, const std::string &text, Context context);

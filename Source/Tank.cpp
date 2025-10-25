@@ -6,20 +6,18 @@
 #include "CommandQueue.hpp"
 #include "PlayerData.hpp"
 #include "ResourceHolder.hpp"
-#include <SFML/Graphics/RenderTarget.hpp>
-#include <SFML/Graphics/RenderStates.hpp>
+#include <SFML/Graphics.hpp>
 
-namespace
-{
-    const std::vector<TankData> Table = initializeTankData();
-}
+static const std::vector<TankData> Table = initializeTankData();
+
+static sf::Vector2i tankSize{ 16, 16 };
 
 Tank::Tank(Type type, const TextureHolder &textures, Tilemap &tilemap, PlayerData &playerData) :
-    Entity(Table[type].hitpoints),
+    Entity(Table[static_cast<unsigned int>(type)].hitpoints),
     // tank type, sprite
     mType(type),
     mRotation(Rotation::Up),
-    mSprite(textures.get(Table[type].texture), sf::IntRect(mRotation * 32, playerData.getGrade() * 16, 16, 16)),
+    mSprite(textures.get(Table[static_cast<unsigned int>(type)].texture), sf::IntRect({ static_cast<int>(mRotation) * 32, playerData.getGrade() * 16 }, tankSize)),
     mChangeHeavyTankSpriteTick(false),
     mChangeHeavyTankSpriteTickTime(),
     // bullets
@@ -32,7 +30,7 @@ Tank::Tank(Type type, const TextureHolder &textures, Tilemap &tilemap, PlayerDat
     mSpawnedPickup(false),
     // moving
     mFrames(0),
-    mFramesPerMove(Table[type].framesPerMove),
+    mFramesPerMove(Table[static_cast<unsigned int>(type)].framesPerMove),
     mTrackTick(false),
     mHasMoved(false),
     mCanMove(true),
@@ -49,27 +47,28 @@ Tank::Tank(Type type, const TextureHolder &textures, Tilemap &tilemap, PlayerDat
     // invincibility on
     mIsInvincible(true),
     mInvincibilityTime(sf::seconds(2.f)),
-    mInvincibilityFrame(textures.get(Textures::InvicibilityFrames), sf::Vector2i(16, 16), 2, sf::seconds(0.12f)),
+    mInvincibilityFrame(textures.get(Textures::InvicibilityAnimation), { 16, 16 }, 2, sf::seconds(0.12f)),
     // spawning
     mIsSpawning(true),
     mSpawningTime(sf::seconds(1.f)),
-    mSpawningFrame(textures.get(Textures::SpawningFrames), sf::Vector2i(16, 16), 6, sf::seconds(0.33f)),
+    mSpawningFrame(textures.get(Textures::SpawnAnimation), { 16, 16 }, 6, sf::seconds(0.33f)),
     // explosion
-    mSmallExplosion(textures.get(Textures::SmallExplosionFrames), sf::Vector2i(16, 16), 3, sf::seconds(18.f / 60.f)),
-    mBigExplosion(textures.get(Textures::BigExplosionFrames), sf::Vector2i(32, 32), 2, sf::seconds(12.f / 60.f)),
+    mSmallExplosion(textures.get(Textures::SmallExplosionAnimation), { 16, 16 }, 3, sf::seconds(18.f / 60.f)),
+    mBigExplosion(textures.get(Textures::BigExplosionAnimation), { 32, 32 }, 2, sf::seconds(12.f / 60.f)),
     mShowExplosion(true),
     // to know everything
     mCommandQueue(),
     mTilemap(tilemap),
     mPlayerData(&playerData),
-    mHasDied(false)
+    mHasDied(false),
+    mPoints(textures.get(Textures::EasterEgg))
 {
     mFireCommand.category = Category::Scene;
     mFireCommand.action = [this, &textures, &playerData](SceneNode &node, sf::Time deltaTime) {
         mBullets -= 1;
         Projectile::Type type = getCategory() == Category::FirstPlayerTank ?
-            (playerData.getGrade() < 1 ? Projectile::FirstPlayerSlowBullet : Projectile::FirstPlayerFastBullet) :
-            (playerData.getGrade() < 1 ? Projectile::SecondPlayerSlowBullet : Projectile::SecondPlayerFastBullet);
+            (playerData.getGrade() < 1 ? Projectile::Type::FirstPlayerSlowBullet : Projectile::Type::FirstPlayerFastBullet) :
+            (playerData.getGrade() < 1 ? Projectile::Type::SecondPlayerSlowBullet : Projectile::Type::SecondPlayerFastBullet);
         createProjectile(node, textures, type);
     };
     mDropPickupCommand.category = Category::Scene;
@@ -78,17 +77,17 @@ Tank::Tank(Type type, const TextureHolder &textures, Tilemap &tilemap, PlayerDat
     };
     mInvincibilityFrame.setRepeating(true);
     mSpawningFrame.setRepeating(true);
-    mBigExplosion.move(-8, -8);
+    mBigExplosion.move({ -8, -8 });
 }
 
 Tank::Tank(Type type, const TextureHolder &textures, Tilemap &tilemap, bool isBonusTank) :
-    Entity(Table[type].hitpoints),
+    Entity(Table[static_cast<unsigned int>(type)].hitpoints),
     mType(type),
     mRotation(Rotation::Down),
-    mSprite(textures.get(Table[type].texture), sf::IntRect(mRotation * 32, 0 * 16, 16, 16)),
+    mSprite(textures.get(Table[static_cast<int>(type)].texture), sf::IntRect({ static_cast<int>(mRotation) * 32, 0 }, tankSize)),
     mChangeHeavyTankSpriteTick(false),
     mChangeHeavyTankSpriteTickTime(),
-    mPoints(textures.get(Textures::Points), sf::IntRect((type - EnemyRegularTank) * 16, 0, 16, 16)),
+    mPoints(textures.get(Textures::Points), sf::IntRect({ (static_cast<int>(type) - static_cast<int>(Type::EnemyLightTank)) * 16, 0 }, tankSize)),
     mShowPoints(sf::seconds(0.5f)),
     // bullets
     mBullets(1),
@@ -100,7 +99,7 @@ Tank::Tank(Type type, const TextureHolder &textures, Tilemap &tilemap, bool isBo
     mSpawnedPickup(false),
     // moving
     mFrames(0),
-    mFramesPerMove(Table[type].framesPerMove),
+    mFramesPerMove(Table[static_cast<unsigned int>(type)].framesPerMove),
     mTrackTick(false),
     mHasMoved(false),
     mCanMove(true),
@@ -116,13 +115,15 @@ Tank::Tank(Type type, const TextureHolder &textures, Tilemap &tilemap, bool isBo
     mStoppedTankTick(),
     // invincibility on
     mIsInvincible(false),
+    mInvincibilityTime(sf::seconds(0.f)),
+    mInvincibilityFrame(textures.get(Textures::InvicibilityAnimation), { 16, 16 }, 2, sf::seconds(0.12f)),
     // spawning
     mIsSpawning(true),
     mSpawningTime(sf::seconds(1.f)),
-    mSpawningFrame(textures.get(Textures::SpawningFrames), sf::Vector2i(16, 16), 6, sf::seconds(0.33f)),
+    mSpawningFrame(textures.get(Textures::SpawnAnimation), { 16, 16 }, 6, sf::seconds(0.33f)),
     // explosion
-    mSmallExplosion(textures.get(Textures::SmallExplosionFrames), sf::Vector2i(16, 16), 3, sf::seconds(18.f / 60.f)),
-    mBigExplosion(textures.get(Textures::BigExplosionFrames), sf::Vector2i(32, 32), 2, sf::seconds(12.f / 60.f)),
+    mSmallExplosion(textures.get(Textures::SmallExplosionAnimation), { 16, 16 }, 3, sf::seconds(18.f / 60.f)),
+    mBigExplosion(textures.get(Textures::BigExplosionAnimation), { 32, 32 }, 2, sf::seconds(12.f / 60.f)),
     mShowExplosion(true),
     // to know everything
     mCommandQueue(),
@@ -133,7 +134,7 @@ Tank::Tank(Type type, const TextureHolder &textures, Tilemap &tilemap, bool isBo
     mFireCommand.category = Category::Scene;
     mFireCommand.action = [this, &textures](SceneNode &node, sf::Time deltaTime) {
         mBullets -= 1;
-        Projectile::Type type = mType == EnemyRapidFireTank ? Projectile::EnemyFastBullet : Projectile::EnemySlowBullet;
+        Projectile::Type type = mType == Type::EnemyTankDestroyer ? Projectile::Type::EnemyFastBullet : Projectile::Type::EnemySlowBullet;
         createProjectile(node, textures, type);
     };
     mDropPickupCommand.category = Category::Scene;
@@ -142,16 +143,16 @@ Tank::Tank(Type type, const TextureHolder &textures, Tilemap &tilemap, bool isBo
     };
     mInvincibilityFrame.setRepeating(true);
     mSpawningFrame.setRepeating(true);
-    mBigExplosion.move(-8, -8);
+    mBigExplosion.move({ -8, -8 });
 }
 
-unsigned int Tank::getCategory() const
+Category Tank::getCategory() const
 {
     switch (mType)
     {
-        case FirstPlayer:
+        case Type::FirstPlayerTank:
             return Category::FirstPlayerTank;
-        case SecondPlayer:
+        case Type::SecondPlayerTank:
             return Category::SecondPlayerTank;
         default:
             return Category::EnemyTank;
@@ -161,8 +162,8 @@ unsigned int Tank::getCategory() const
 sf::FloatRect Tank::getBoundingRect() const
 {
     sf::FloatRect boundingRect = mSprite.getGlobalBounds();
-    boundingRect.left = cropNumber(static_cast<int>(boundingRect.left));
-    boundingRect.top = cropNumber(static_cast<int>(boundingRect.top));
+    sf::Vector2f croppedPosition{ cropNumber(static_cast<int>(boundingRect.position.x)), cropNumber(static_cast<int>(boundingRect.position.y)) };
+    boundingRect.position = croppedPosition;
     return getWorldTransform().transformRect(boundingRect);
 }
 
@@ -189,8 +190,10 @@ void Tank::destroy()
 void Tank::damage(int points)
 {
     Entity::damage(points);
-    if (mType == EnemyHeavyTank)
+    if (mType == Type::EnemyHeavyTank)
+    {
         checkPickupDrop(mCommandQueue);
+    }
 }
 
 void Tank::damage(int points, PlayerData *player)
@@ -201,7 +204,7 @@ void Tank::damage(int points, PlayerData *player)
 
 bool Tank::isPlayer() const
 {
-    return mType == FirstPlayer || mType == SecondPlayer;
+    return mType == Type::FirstPlayerTank || mType == Type::SecondPlayerTank;
 }
 
 bool Tank::isInvincible() const
@@ -237,7 +240,9 @@ void Tank::stopTank(sf::Time duration, bool showTank)
 void Tank::fire()
 {
     if (!mIsStopped && isSpawned())
+    {
         mIsFiring = true;
+    }
 }
 
 void Tank::makeInvincible(sf::Time duration)
@@ -250,7 +255,9 @@ void Tank::upgrade()
 {
     mPlayerData->getGrade() + 1 > 3 ? addLife() : addGrade();
     if (mPlayerData->getGrade() == 2)
+    {
         mBullets += 1;
+    }
 }
 
 void Tank::addLife()
@@ -281,31 +288,39 @@ void Tank::checkTanksAhead(const Tanks &tanks)
         if (tank != this && tank->isSpawned() && !tank->isDestroyed())
         {
             sf::Vector2f velocity;
-            if (mRotation == Rotation::Left or mRotation == Rotation::Right)
+            if (mRotation == Rotation::Left || mRotation == Rotation::Right)
+            {
                 velocity.x += mRotation == Rotation::Left ? -8 : 8;
-            else if (mRotation == Rotation::Up or mRotation == Rotation::Down)
+            }
+            else if (mRotation == Rotation::Up || mRotation == Rotation::Down)
+            {
                 velocity.y += mRotation == Rotation::Up ? -8 : 8;
+            }
             sf::FloatRect thisTankRect = this->getBoundingRect();
             sf::FloatRect otherTankRect = tank->getBoundingRect();
-            thisTankRect.left += velocity.x;
-            thisTankRect.top += velocity.y;
-            if (thisTankRect.intersects(otherTankRect))
+            thisTankRect.position += velocity;
+            if (thisTankRect.findIntersection(otherTankRect))
             {
                 sf::FloatRect nextPosition = getBoundingRect();
-                nextPosition.left += velocity.x / 8;
-                nextPosition.top += velocity.y / 8;
-                if (nextPosition.intersects(otherTankRect))
+                nextPosition.position += velocity / 8.f;
+                if (nextPosition.findIntersection(otherTankRect))
+                {
                     intersected = true;
+                }
             }
         }
     }
     if (intersected)
     {
         if (mIsInOccupiedSpawnpoint)
+        {
             intersected = false;
+        }
     }
     else
+    {
         mIsInOccupiedSpawnpoint = false;
+    }
     mCanMove = !intersected;
 }
 
@@ -327,21 +342,31 @@ PlayerData &Tank::getPlayerData()
 void Tank::drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const
 {
     if (!isSpawned())
+    {
         target.draw(mSpawningFrame, states);
+    }
     else if (mShowTankTick && !isDestroyed())
     {
         target.draw(mSprite, states);
         if (isInvincible())
+        {
             target.draw(mInvincibilityFrame, states);
+        }
     }
     else if (mShowExplosion && isDestroyed())
     {
         if (!mSmallExplosion.isFinished())
+        {
             target.draw(mSmallExplosion, states);
+        }
         else if (!mBigExplosion.isFinished())
+        {
             target.draw(mBigExplosion, states);
+        }
         else if (mPlayerData != nullptr)
+        {
             target.draw(mPoints, states);
+        }
     }
 }
 
@@ -355,7 +380,9 @@ void Tank::updateCurrent(sf::Time deltaTime, CommandQueue &commands)
     else if (isSpawned())
     {
         if (!mCommandQueue.isEmpty())
+        {
             commands.push(mCommandQueue.pop());
+        }
         checkProjectileLaunch(deltaTime, commands);
         updateTimers(deltaTime);
         updateMovementPattern();
@@ -363,7 +390,9 @@ void Tank::updateCurrent(sf::Time deltaTime, CommandQueue &commands)
         updateTankSprite();
     }
     else
+    {
         updateSpawning(deltaTime);
+    }
 }
 
 void Tank::updateDestroyedTank(sf::Time deltaTime)
@@ -371,19 +400,27 @@ void Tank::updateDestroyedTank(sf::Time deltaTime)
     if (!mHasDied)
     {
         if (isPlayer())
+        {
             mPlayerData->destroyed();
+        }
         else if (mPlayerData != nullptr)
+        {
             mPlayerData->recordEnemyTank(mType);
+        }
         mHasDied = true;
     }
     if (!updateExplosion(deltaTime))
+    {
         mShowPoints -= deltaTime;
+    }
 }
 
 void Tank::updateSpawning(sf::Time deltaTime)
 {
     if (mSpawningTime <= sf::Time::Zero)
+    {
         mIsSpawning = false;
+    }
     else
     {
         mSpawningTime -= deltaTime;
@@ -410,27 +447,35 @@ void Tank::checkBonusTankSprite(sf::Time deltaTime)
             mBonusTankFrameTime = sf::seconds(8.f / 60.f);
         }
         else
+        {
             mBonusTankFrameTime -= deltaTime;
+        }
     }
 }
 
 void Tank::checkHeavyTankSprite(sf::Time deltaTime)
 {
-    if (mChangeHeavyTankSpriteTickTime <= sf::Time::Zero && mType == EnemyHeavyTank)
+    if (mChangeHeavyTankSpriteTickTime <= sf::Time::Zero && mType == Type::EnemyHeavyTank)
     {
         mChangeHeavyTankSpriteTickTime = sf::seconds(4.f / 60.f);
         mChangeHeavyTankSpriteTick = !mChangeHeavyTankSpriteTick;
     }
     else
+    {
         mChangeHeavyTankSpriteTickTime -= deltaTime;
+    }
 }
 
 void Tank::checkTankSliding(sf::Time deltaTime)
 {
     if (mSlidingTime <= sf::Time::Zero)
+    {
         mIsForcedToMove = false;
+    }
     else
+    {
         mSlidingTime -= deltaTime;
+    }
 }
 
 void Tank::checkTankStopped(sf::Time deltaTime)
@@ -450,7 +495,9 @@ void Tank::checkTankStopped(sf::Time deltaTime)
                 mStoppedTankTick = sf::seconds(8.f / 60.f);
             }
             else
+            {
                 mStoppedTankTick -= deltaTime;
+            }
         }
         mStopDuration -= deltaTime;
     }
@@ -459,7 +506,9 @@ void Tank::checkTankStopped(sf::Time deltaTime)
 void Tank::checkTankInvincibility(sf::Time deltaTime)
 {
     if (mInvincibilityTime <= sf::Time::Zero && isSpawned())
+    {
         mIsInvincible = false;
+    }
     else
     {
         mInvincibilityTime -= deltaTime;
@@ -469,36 +518,46 @@ void Tank::checkTankInvincibility(sf::Time deltaTime)
 
 void Tank::updateTankSprite()
 {
-    sf::IntRect textureRect(mRotation * 32, (isPlayer() ? mPlayerData->getGrade() : 0) * 16, 16, 16);
-    if (mType == EnemyHeavyTank)
+    sf::IntRect textureRect({ static_cast<int>(mRotation) * 32, (isPlayer() ? mPlayerData->getGrade() : 0) * 16 }, tankSize);
+    if (mType == Type::EnemyHeavyTank)
     {
         int health = getHitpoints();
         if (health == 4)
         {
             if (mChangeHeavyTankSpriteTick)
-                textureRect.top = 2 * 16; // green - yellow
+            {
+                textureRect.position.y = 2 * 16; // green - yellow
+            }
             else
-                textureRect.top = 1 * 16;
+            {
+                textureRect.position.y = 1 * 16;
+            }
         }
         else if (health == 3)
         {
             if (mChangeHeavyTankSpriteTick)
-                textureRect.top = 2 * 16; // yellow - white
+            {
+                textureRect.position.y = 2 * 16; // yellow - white
+            }
         }
         else if (health == 2)
         {
             if (mChangeHeavyTankSpriteTick)
-                textureRect.top = 1 * 16; // green - white
+            {
+                textureRect.position.y = 1 * 16; // green - white
+            }
         }
         if (mBonusTankFrameTick)
-            textureRect.top = 3 * 16;
+        {
+            textureRect.position.y = 3 * 16;
+        }
         // make his color change as changes his health
-        textureRect.left += mTrackTick ? 16 : 0;
+        textureRect.position.x += mTrackTick ? 16 : 0;
     }
     else
     {
-        textureRect.left += mTrackTick ? 16 : 0;
-        textureRect.top += mBonusTankFrameTick ? 16 : 0;
+        textureRect.position.x += mTrackTick ? 16 : 0;
+        textureRect.position.y += mBonusTankFrameTick ? 16 : 0;
     }
     mSprite.setTextureRect(textureRect);
 }
@@ -510,14 +569,20 @@ void Tank::updateMovementPattern()
         auto tankPosition = getWorldPosition();
         // change tank rotation if reached another tile
         if (static_cast<int>(tankPosition.x) % 8 == 0 && static_cast<int>(tankPosition.y) % 8 == 0 && randomInt(16) == 0)
+        {
             mCommand(this);
+        }
         else if (!mCanMove && randomInt(4) == 0)
         {
             // move clock or anticlockwise
             if (mRotation == Rotation::Left || mRotation == Rotation::Right)
+            {
                 mRotation = randomInt(2) ? Rotation::Up : Rotation::Down;
+            }
             else if (mRotation == Rotation::Up || mRotation == Rotation::Down)
+            {
                 mRotation = randomInt(2) ? Rotation::Left : Rotation::Right;
+            }
         }
         moveTank(mRotation);
     }
@@ -531,11 +596,17 @@ bool Tank::isSequenceEnded() const
 bool Tank::updateExplosion(sf::Time deltaTime)
 {
     if (!mSmallExplosion.isFinished())
+    {
         mSmallExplosion.update(deltaTime);
+    }
     else if (!mBigExplosion.isFinished())
+    {
         mBigExplosion.update(deltaTime);
+    }
     else
+    {
         return false;
+    }
     return true;
 }
 
@@ -546,23 +617,31 @@ void Tank::updatePosition()
     if (mRotation == Rotation::Left || mRotation == Rotation::Right)
     {
         velocity.x += mRotation == Rotation::Left ? -1 : 1;
-        setPosition(spritePosition.x, cropNumber(static_cast<int>(spritePosition.y)));
+        setPosition({ spritePosition.x, cropNumber(static_cast<int>(spritePosition.y)) });
     }
     else if (mRotation == Rotation::Up || mRotation == Rotation::Down)
     {
         velocity.y += mRotation == Rotation::Up ? -1 : 1;
-        setPosition(cropNumber(static_cast<int>(spritePosition.x)), spritePosition.y);
+        setPosition({ cropNumber(static_cast<int>(spritePosition.x)), spritePosition.y });
     }
     if (mHasMoved || mIsForcedToMove)
+    {
         mFrames += 1;
+    }
     else
+    {
         mFrames = 0;
+    }
     if (mFrames % mFramesPerMove != 0 || (mFramesPerMove == 1) && mHasMoved)
     {
         if (checkNextPosition(velocity))
+        {
             move(velocity);
+        }
         if (!mIsForcedToMove || mHasMoved)
+        {
             mTrackTick = !mTrackTick;
+        }
     }
     mHasMoved = false;
 }
@@ -570,25 +649,32 @@ void Tank::updatePosition()
 bool Tank::checkNextPosition(sf::Vector2f velocity)
 {
     sf::FloatRect nextPosition = getBoundingRect();
-    nextPosition.left += velocity.x;
-    nextPosition.top += velocity.y;
-    bool onIce = false;
+    nextPosition.position += velocity;
     if (!mCanMove)
+    {
         return false;
+    }
+    bool onIce = false;
     for (const auto &tile : mTilemap.get())
     {
         Tilemap::Type tileNumber = tile.tileNumber;
         if (tileNumber == Tilemap::Air || tileNumber == Tilemap::Leaf)
+        {
             continue;
-        sf::FloatRect tileRect(static_cast<float>(16 + tile.x * 8), static_cast<float>(8 + tile.y * 8), 8, 8);
-        if (tileRect.intersects(nextPosition))
+        }
+        sf::Vector2f tileSize{ 8, 8 };
+        sf::Vector2f offset{ 16, 8 };
+        sf::FloatRect tileRect(offset + sf::Vector2f{ tile.x * tileSize.x, tile.y * tileSize.y }, tileSize);
+        if (tileRect.findIntersection(nextPosition))
         {
             if (tileNumber == Tilemap::Ice && isPlayer())
             {
                 onIce = true;
                 mIsForcedToMove = true;
                 if (mHasMoved)
+                {
                     mSlidingTime = sf::seconds(28.f / 60.f);
+                }
             }
             else
             {
@@ -599,7 +685,7 @@ bool Tank::checkNextPosition(sf::Vector2f velocity)
     }
     if (!onIce)
         mSlidingTime = sf::Time::Zero;
-    if (16 <= nextPosition.left && nextPosition.left <= 208 && 8 <= nextPosition.top && nextPosition.top <= 200)
+    if (16 <= nextPosition.position.x && nextPosition.position.x <= 208 && 8 <= nextPosition.position.y && nextPosition.position.y <= 200)
         return true;
     return false;
 }
@@ -622,7 +708,7 @@ void Tank::checkProjectileLaunch(sf::Time deltaTime, CommandQueue &commands)
     if (mIsFiring && mFireCountdown <= sf::Time::Zero && mBullets > 0)
     {
         commands.push(mFireCommand);
-        mFireCountdown = Table[mType].fireInterval;
+        mFireCountdown = Table[static_cast<int>(mType)].fireInterval;
         mIsFiring = false;
     }
     else
@@ -635,8 +721,8 @@ void Tank::checkProjectileLaunch(sf::Time deltaTime, CommandQueue &commands)
 void Tank::createProjectile(SceneNode &node, const TextureHolder &textures, Projectile::Type type) const
 {
     std::unique_ptr<Projectile> projectile(isPlayer() ?
-                                           new Projectile(type, textures, mTilemap, mRotation, mPlayerData, mBullets) :
-                                           new Projectile(type, textures, mTilemap, mRotation, mBullets));
+        new Projectile(type, textures, mTilemap, mRotation, mPlayerData, mBullets) :
+        new Projectile(type, textures, mTilemap, mRotation, mBullets));
     sf::Vector2f offset;
     if (mRotation == Rotation::Left || mRotation == Rotation::Right)
     {
@@ -654,7 +740,7 @@ void Tank::createProjectile(SceneNode &node, const TextureHolder &textures, Proj
 
 void Tank::createPickup(SceneNode &node, const TextureHolder &textures) const
 {
-    Pickup::Type type = static_cast<Pickup::Type>(randomInt(Pickup::TypeCount));
+    Pickup::Type type = static_cast<Pickup::Type>(randomInt(static_cast<int>(Pickup::Type::TypeCount)));
     std::unique_ptr<Pickup> pickup(new Pickup(type, textures));
     std::vector<Tilemap::Tile> tiles;
     for (const auto &tile : mTilemap.get())
@@ -671,9 +757,15 @@ void Tank::createPickup(SceneNode &node, const TextureHolder &textures) const
 float Tank::cropNumber(int number) const
 {
     if (0 <= number % 16 && number % 16 <= 4)
+    {
         return static_cast<float>(number - number % 16);
+    }
     else if (4 < number % 16 && number % 16 <= 12)
+    {
         return static_cast<float>(number - (number % 16) + 8);
+    }
     else
+    {
         return static_cast<float>(number - (number % 16) + 16);
+    }
 }

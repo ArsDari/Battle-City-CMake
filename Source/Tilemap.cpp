@@ -114,7 +114,9 @@ void Tilemap::update(sf::Time deltaTime)
         for (auto &tile : mTilemap)
         {
             if (tile.tileNumber == Water)
+            {
                 tile.modifier = mWaterCurrentFrame;
+            }
         }
     }
     else
@@ -137,10 +139,14 @@ void Tilemap::update(sf::Time deltaTime)
                 reinforceBase();
             }
             else
+            {
                 mDefenseTickTime -= deltaTime;
+            }
         }
         else
+        {
             mDefenseTimeLeft -= deltaTime;
+        }
     }
 }
 
@@ -168,6 +174,8 @@ std::vector<std::string> Tilemap::split(const std::string &string, const char de
     std::stringstream ss(string);
     std::string item;
     while (std::getline(ss, item, delimeter))
+    {
         result.push_back(item);
+    }
     return result;
 }

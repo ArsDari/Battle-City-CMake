@@ -3,14 +3,14 @@
 #include "Entity.hpp"
 #include "Command.hpp"
 #include "ResourceIdentifiers.hpp"
-#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics.hpp>
 
 class Tank;
 
 class Pickup : public Entity
 {
 public:
-    enum Type
+    enum class Type : unsigned int
     {
         Helmet,
         Clock,
@@ -21,7 +21,7 @@ public:
         TypeCount
     };
     Pickup(Type type, const TextureHolder &textures);
-    virtual unsigned int getCategory() const;
+    virtual Category getCategory() const;
     virtual sf::FloatRect getBoundingRect() const;
     void apply(Tank &tank) const;
 private:

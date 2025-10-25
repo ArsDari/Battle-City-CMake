@@ -1,9 +1,8 @@
 #pragma once
 
 #include "Category.hpp"
-#include <SFML/System/Time.hpp>
-#include <SFML/Graphics/Transformable.hpp>
-#include <SFML/Graphics/Drawable.hpp>
+#include <SFML/System.hpp>
+#include <SFML/Graphics.hpp>
 #include <vector>
 #include <set>
 #include <memory>
@@ -17,7 +16,6 @@ class SceneNode : public sf::Transformable, public sf::Drawable
 public:
     SceneNode(const SceneNode &) = delete;
     SceneNode &operator=(const SceneNode &) = delete;
-
     using Ptr = std::unique_ptr<SceneNode>;
     using Pair = std::pair<SceneNode *, SceneNode *>;
     explicit SceneNode(Category category = Category::None);
@@ -27,7 +25,7 @@ public:
     sf::Vector2f getWorldPosition() const;
     sf::Transform getWorldTransform() const;
     void onCommand(const Command &command, sf::Time deltaTime);
-    virtual unsigned int getCategory() const;
+    virtual Category getCategory() const;
     void checkSceneCollision(SceneNode &sceneGraph, std::set<Pair> &collisionPairs);
     void checkNodeCollision(SceneNode &node, std::set<Pair> &collisionPairs);
     void removeWrecks();

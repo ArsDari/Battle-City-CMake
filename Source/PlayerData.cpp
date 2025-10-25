@@ -9,10 +9,10 @@ PlayerData::PlayerData(Tank::Type type, sf::Vector2f spawnpoint) :
     mPoints(0),
     mIsAlive(false)
 {
-    mDestroyedEnemyTanks[Tank::EnemyRegularTank] = 0;
-    mDestroyedEnemyTanks[Tank::EnemyAPC] = 0;
-    mDestroyedEnemyTanks[Tank::EnemyRapidFireTank] = 0;
-    mDestroyedEnemyTanks[Tank::EnemyHeavyTank] = 0;
+    mDestroyedEnemyTanks[Tank::Type::EnemyLightTank] = 0;
+    mDestroyedEnemyTanks[Tank::Type::EnemyAPC] = 0;
+    mDestroyedEnemyTanks[Tank::Type::EnemyTankDestroyer] = 0;
+    mDestroyedEnemyTanks[Tank::Type::EnemyHeavyTank] = 0;
 }
 
 Tank::Type PlayerData::getType() const
@@ -41,7 +41,9 @@ PlayerData &PlayerData::modifyPoints(int points)
 {
     mPoints += points;
     if (mPoints > 9999)
+    {
         mPoints %= 10000;
+    }
     return *this;
 }
 
@@ -107,6 +109,8 @@ PlayerData::Statistics PlayerData::resetStatistics()
     mIsAlive = false;
     Statistics returnStatistics(mDestroyedEnemyTanks);
     for (auto &pair : mDestroyedEnemyTanks)
+    {
         pair.second = 0;
+    }
     return returnStatistics;
 }
