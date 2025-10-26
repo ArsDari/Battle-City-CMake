@@ -19,7 +19,7 @@ Application::Application() :
     mWindow(
         sf::VideoMode(WINDOW_SIZE *WINDOW_SIZE_MULTIPLIER),
         "Battle City",
-        sf::Style::Titlebar,
+        sf::Style::Close,
         sf::State::Windowed),
     mTextures(),
     mFonts(),
