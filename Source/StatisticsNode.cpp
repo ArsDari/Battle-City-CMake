@@ -1,4 +1,5 @@
 #include "StatisticsNode.hpp"
+#include <cmath>
 
 static int countDigit(int number)
 {

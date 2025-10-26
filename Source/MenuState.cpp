@@ -2,7 +2,8 @@
 #include "Button.hpp"
 #include "Label.hpp"
 #include "ResourceHolder.hpp"
-#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics.hpp>
+#include <cmath>
 
 static int countDigit(int number)
 {

@@ -1,4 +1,5 @@
 #include "TileNode.hpp"
+#include <algorithm>
 
 TileNode::TileNode(TextureHolder &textures, Tilemap &tilemap, bool isLowerLayer) :
     mTileset(textures.get(Textures::BrickTileset)),
